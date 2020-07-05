@@ -1,7 +1,7 @@
 {
-	"name": "squarepaint.io",
+	"name": "node-project",
 	"version": "1.0.0",
-	"description": "",
+	"description": "A simple school project",
 	"main": "server.js",
 	"dependencies": {
 		"axios": "^0.19.2",
@@ -9,10 +9,11 @@
 		"dotenv": "^8.2.0",
 		"express": "^4.17.1",
 		"express-session": "^1.17.1",
+		"express-validator": "^6.6.0",
 		"mysql": "^2.18.1",
 		"mysql2": "^2.1.0",
 		"pug": "^3.0.0",
-		"sequelize": "^5.21.13",
+		"sequelize": "^5.22.3",
 		"sha1": "^1.1.1",
 		"socket.io": "^2.3.0"
 	},

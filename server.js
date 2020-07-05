@@ -2,7 +2,10 @@ const express = require('express'),
   session = require('express-session'),
   bodyParser = require('body-parser'),
   homeRouter = require('./routes/home'),
-  tilesRouter = require('./routes/tiles')
+  paintRouter = require('./routes/paint'),
+  filmsRouter = require('./routes/films'),
+  tilesApiRouter = require('./routes/api/tiles'),
+  filmsApiRouter = require('./routes/api/films')
 
 const port = process.env.PORT || 3000
 const hostname = process.env.HOST || 'localhost'
@@ -29,7 +32,10 @@ app.use(express.static('public'))
 app.use(bodyParser.json({ extended: true }))
 
 app.use(homeRouter)
-app.use(tilesRouter)
+app.use(paintRouter)
+app.use(filmsRouter)
+app.use(tilesApiRouter)
+app.use(filmsApiRouter)
 
 app.get('/notFound', (req, res) => res.render('errors/404'))
 

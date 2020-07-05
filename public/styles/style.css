@@ -1,0 +1,238 @@
+/* 
+* General
+*/
+:root {
+  --color-bleen: #52dccd;
+  --color-black: #252523;
+  --color-grey: #767676;
+}
+
+body {
+  display: flex;
+  background: none;
+  color: white;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--color-black);
+}
+
+nav {
+  flex: 1;
+  height: 100%;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--color-bleen);
+}
+
+.nav-link {
+  box-sizing: border-box;
+  padding: 10px;
+  font-size: 20px;
+  width: 100%;
+  text-decoration: none;
+  color: white;
+}
+
+.nav-link:first-of-type {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+
+.nav-link h1 {
+  font-size: 30px;
+  color: var(--color-bleen);
+}
+
+.nav-link.active {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: var(--color-bleen);
+}
+
+main {
+  flex: 7;
+  height: 100%;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+/* 
+* SquarePaint
+*/
+header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 25px;
+  margin-bottom: 10px;
+}
+
+h2 {
+  font-size: 20px;
+}
+
+.paint {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+}
+
+.mosaic {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 25px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.tile {
+  width: 20px;
+  height: 20px;
+  margin: 2px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.color {
+  position: absolute;
+  left: 25px;
+  top: -15px;
+}
+
+#color-picker {
+  margin-left: 8px;
+}
+
+/* 
+* CinemArchive
+*/
+.films {
+  width: 100%;
+}
+
+h3 {
+  font-size: 18px;
+  padding: 10px;
+}
+
+.filters {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px;
+}
+
+input[type="radio"] {
+  display: none;
+}
+
+input[type="radio"]+label,
+.select-page,
+.current-page,
+button {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 40px;
+  height: 40px;
+  border: 1px solid white;
+  color: white;
+  background: none;
+  margin-right: 8px;
+  padding: 8px;
+  cursor: pointer;
+  outline: none;
+}
+
+.pages-bottom {
+  margin: 8px;
+}
+
+.filters>*>*:last-child,
+.pages-bottom>*:last-child {
+  margin: 0px;
+}
+
+
+input[type="radio"]:checked+label,
+.current-page {
+  border-color: var(--color-bleen);
+  color: var(--color-bleen);
+}
+
+.limits,
+.pages-top,
+.filter_by {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pages-bottom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pages>div {
+  display: flex;
+  width: 232px;
+  overflow: hidden;
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.table-head,
+.table-row {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  border: 1px solid white;
+}
+
+.table-head span,
+.table-row span {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  padding: 10px;
+}
+
+.table-head span:not(:last-child),
+.table-row span:not(:last-child) {
+  border-right: 1px solid white;
+}
+
+.table-head {
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  color: var(--color-bleen);
+}
+
+.table-row:last-of-type {
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+}

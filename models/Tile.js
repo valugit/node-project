@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define('Tile', {
+  return sequelize.define('tile', {
     color: {
       type: DataTypes.STRING,
       allowNull: false
@@ -13,6 +13,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     }
   }, {
-
+    timestamps: false
   })
 }

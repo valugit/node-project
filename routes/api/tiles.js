@@ -1,8 +1,9 @@
 const express = require('express'),
-  router = express.Router(),
-  { Tile } = require('../db')
+  router = express.Router()
 
-router.post('/tiles', (req, res) => {
+const { Tile } = require('../../db')
+
+router.post('/api/tiles', (req, res) => {
   Tile.findOne({
     where: {
       coord_X: req.body.x,
@@ -31,7 +32,7 @@ router.post('/tiles', (req, res) => {
   })
 })
 
-router.put('/tiles/:id(\\d+)', (req, res) => {
+router.put('/api/tiles/:id(\\d+)', (req, res) => {
   Tile.findByPk(req.params.id).then(tile => {
     if (tile) {
       tile.update(req.body).then(tile => {
