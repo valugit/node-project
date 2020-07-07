@@ -3,7 +3,14 @@ extends layouts/layout
 block layout-content
   header
     h2 Welcome to NodeProject
-  section
-    div
+  .home
+    section
       h3 What is NodeProject?
-      p NodeProject is a small platform carried out as part of my studies. 
+      p NodeProject is a small platform carried out as part of my studies.
+      | This is a monolithic application, realized in Node.js using Express, Sequelize and Pug.
+    section
+      h3 What can I do here?
+      p We have for the moment two main features for you that you can access by using the navigation bar on the left which are:
+        ul
+          li SquarePaint, a room where you can draw with multiple peoples at the same time
+          li CinemArchive, a tool for you to search and get information about a large amount of films
