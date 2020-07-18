@@ -1,0 +1,99 @@
+extends cinema
+
+block page-content
+  .distributor
+    form(name='distributor')
+      div
+        input#nom(type='text')
+        label(for='nom') Name:
+      div
+        input#telephone(type='tel')
+        label(for='telephone') Telephone:
+      div.actions
+        button#save(type='button') Save
+        button#delete(type='button') Delete
+
+
+  script.
+    let id = !{id}
+
+    // Socket.io for live updates of the distributors
+    socket.on('distributors', data => {
+      let { type, distributor } = data
+      if (id === distributor.id_distributeur) {
+        if (type === 'DELETED')
+          window.location.pathname = '/cinema/distributors'
+        if (type === 'UPDATED')
+          getDistributor()
+      }
+    })
+
+    // Get the distributor on page load
+    window.addEventListener('load', event => getDistributor())
+
+    // AddEventListener to delete distributor
+    document.getElementById('delete').addEventListener('click', () => deleteDistributor())
+    document.getElementById('save').addEventListener('click', () => updateDistributor())
+
+    // Function to fill the form with default values
+    const fillForm = infos => {
+      let form = document.forms['distributor'].elements
+      for (const [key, value] of Object.entries(infos)) {
+        for (let i = 0; i < form.length; i++) {
+          if (form[i].id === key)
+            form[i].value = value
+        }
+      }
+    }
+
+    const updateDistributor = () => {
+      let updated = {}
+      let form = document.forms['distributor'].elements
+
+      for (let i = 0; i < form.length; i++) {
+        if (form[i].type !== 'button' && !(form[i].value === '' || form[i].value === null || form[i].value === undefined))
+          updated[form[i].id] = form[i].value
+      }
+      
+      fetch(`/api/distributors/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...loadAuthorizationHeader()
+        },
+        body: JSON.stringify(updated)
+      })
+      .then(res => {
+        res.json().then(json => console.log(json))
+      })
+      .catch(err => console.log(err))  
+    }
+
+    // Fetch to delete distributor
+    const deleteDistributor = () => {
+      fetch(`/api/distributors/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          ...loadAuthorizationHeader()
+        }
+      })
+      .then(res => window.location.pathname = '/cinema/distributors')
+      .catch(err => console.log(err))
+    }
+    
+    // Fetch to get distributor
+    const getDistributor = () => {
+      fetch(`/api/distributors/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...loadAuthorizationHeader()
+        }
+      }).then(res => {
+        res.json().then(json => {
+          fillForm(json.distributor)
+        })
+      }).catch(err => console.log(err))
+    }
+

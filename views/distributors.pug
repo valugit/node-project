@@ -1,0 +1,111 @@
+extends cinema
+
+block page-content
+  .distributors
+    header
+      h3=subtitle
+
+    section.filters
+
+      .limits
+        input(type='radio' id='limit_25' name='limit' value=20 checked) 
+        label(for='limit_25') 20
+        input(type='radio' id='limit_50' name='limit' value=40) 
+        label(for='limit_50') 40
+        input(type='radio' id='limit_100' name='limit' value=80) 
+        label(for='limit_100') 80
+
+      .filter_by
+        button.order ASC
+        input(type='radio' id='id_distributeur' name='filter' value='id_distributeur' checked)
+        label(for='id_distributeur') Id
+        input(type='radio' id='nom' name='filter' value='nom')
+        label(for='nom') Name
+        input(type='radio' id='telephone' name='filter' value='telephone')
+        label(for='telephone') Phone
+        input(type='radio' id='adresse' name='filter' value='adresse')
+        label(for='adresse') Address
+        input(type='radio' id='cpostal' name='filter' value='cpostal')
+        label(for='cpostal') Zip Code
+        input(type='radio' id='ville' name='filter' value='ville')
+        label(for='ville') City
+        input(type='radio' id='pays' name='filter' value='pays')
+        label(for='pays') Country
+
+      .pages-top
+
+    section.table
+      .table-head
+        span Id
+        span Name
+        span Phone
+        span Address
+        span Zip Code
+        span City
+        span Country
+        span Actions
+    
+    footer.pages-bottom
+
+
+  script(src='/static/scripts/pagination.js')
+  script.
+    let count
+    let limit = 20
+    let offset = 0
+    let order = ['id_distributeur', 'ASC']
+    let currentPage = 1
+
+    window.addEventListener('load', event => getDistributors())
+
+    // Socket.io for live updates of the distributors
+    socket.on('distributors', data => {
+      let { type, distributor } = data
+      let row = document.getElementById(`distributor_${distributor.id_distributeur}`)
+      if (row)
+        getDistributors()
+    })
+
+    document.querySelector('.order').addEventListener('click', function () {
+      order[1] = order[1] === 'ASC' ? 'DESC' : 'ASC'
+      this.innerHTML = order[1]
+      getDistributors()
+    })
+
+    document.querySelectorAll('input[name="filter"]').forEach(el => {
+      el.addEventListener('click', () => {
+        order[0] = el.value
+        getDistributors()
+      })
+    })
+
+    document.querySelectorAll('input[name="limit"]').forEach(el => {
+      el.addEventListener('click', () => {
+        limit = el.value
+        offset = 0
+        currentPage = 1
+        getDistributors()
+      })
+    })
+
+    const getDistributors = () => {
+      fetch(`/api/distributors?limit=${limit}&offset=${offset}&order=${JSON.stringify(order)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...loadAuthorizationHeader()
+        }
+      }).then(res => {
+        res.json().then(json => {
+          if (count !== json.distributorsCount) {
+            count = json.distributorsCount
+            document.querySelector('h3').innerHTML = `We found ${count} distributors:`
+          }
+          paginate(getDistributors)
+          generateTable(json.distributors, 'distributor', 'distributors')
+        })
+      }).catch(err => console.log(err))
+    }
+
+
+

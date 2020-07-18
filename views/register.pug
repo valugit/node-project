@@ -1,0 +1,63 @@
+extends layouts/layout
+
+block layout-content
+  header
+    h2 Register
+
+  form.sign-up-form
+    input#firstName(type="text")
+    input#lastName(type="text")
+    input#email(type="email")
+    input#password(type="password")
+    button#submit(type="button") Sign Up
+    div#message
+
+  div Already have an account ?
+    a(href="/login") Sign in.
+
+  script.
+    document.getElementById('submit').addEventListener('click', () => {
+      let firstName = document.getElementById('firstName').value
+      let lastName = document.getElementById('lastName').value
+      let email = document.getElementById('email').value
+      let password = document.getElementById('password').value
+      register({ firstName, lastName, email, password })
+    })
+
+    const setMessage = status => {
+      let message = document.getElementById('message')
+      if (status === 'error') {
+        message.className = 'message-error'
+        message.innerHTML = 'Something went wrong.'
+      } else {
+        message.className = 'message-success'
+        message.innerHTML = 'Your account has been successfully created.'
+      }
+    }
+
+    const register = body => {
+      fetch('/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      })
+      .then(res => {
+        res.json().then(json => {
+          console.log(json)
+          if (json.status === 422)
+            setMessage('error')
+          if (json.status === 201) {
+            setMessage('success')
+            setTimeout(() => {
+              window.location.pathname = '/login'
+            }, 2000)
+          }
+        })
+      })
+      .catch(err => {
+        console.log(err)
+        setMessage('error')
+      })
+    }

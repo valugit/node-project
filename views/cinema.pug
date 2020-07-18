@@ -1,0 +1,74 @@
+extends layouts/layout
+
+block layout-content
+  header
+    h2=title
+
+  nav.nav-cinema
+    a.nav-link(href="/cinema" class=`${!subtitle ? 'active' : null}`) Home
+    a.nav-link(href="/cinema/films" class=`${subtitle === 'films' ? 'active' : null}`) Films
+    a.nav-link(href="/cinema/distributors" class=`${subtitle === 'distributors' ? 'active' : null}`) Distributors
+    a.nav-link(href="/cinema/categories" class=`${subtitle === 'categories' ? 'active' : null}`) Categories
+  
+  if subtitle
+    block page-content
+  else
+    .cinema-home
+        
+
+    script.
+      let subtitle = !{subtitle}
+      
+      window.addEventListener('load', event => getCurrentSession())
+
+      // Socket.io for live updates of the session
+      socket.on('sessions', data => {
+        let { type, session } = data
+        if (!subtitle)
+          getCurrentSession()
+      })
+
+      const createSession = session => {
+        const cinemaHome = document.querySelector('.cinema-home')
+        const h3 = document.createElement('h3')
+        h3.innerHTML = 'Current film:'
+        cinemaHome.appendChild(h3)
+
+        const film = session.film
+        const filmInfos = document.createElement('div')
+        filmInfos.className = 'cinema-film-infos'
+        for (const [key, value] of Object.entries(film)) {
+          const span = document.createElement('span')
+          if (key === 'genre' || key === 'distributeur')
+            span.innerHTML = `${key}: ${value && value.nom ? value.nom : 'undefined'}`
+          else 
+            span.innerHTML = `${key}: ${value || 'undefined'}`
+          filmInfos.appendChild(span)
+        }
+        cinemaHome.appendChild(filmInfos)
+
+        const user = session.user
+        const userInfos = document.createElement('div')
+        userInfos.className = 'cinema-user-infos'
+        userInfos.innerHTML = `Choosen by: ${user.firstName} ${user.lastName}`
+        cinemaHome.appendChild(userInfos)
+      }
+
+      const getCurrentSession = () => {
+        fetch('/api/sessions', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            ...loadAuthorizationHeader()
+          }
+        }).then(res => {
+          if (res.status === 204) 
+              document.querySelector('.cinema-home').innerHTML = 'No film currently playing.'
+          if (res.status === 200) {
+            res.json().then(json => {
+              console.log(json.session)
+              createSession(json.session)
+            })
+          }
+        }).catch(err => console.log(err))
+      }

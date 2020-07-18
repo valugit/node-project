@@ -7,41 +7,35 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     id_genre: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'genre',
-        key: 'id_genre'
-      }
+      type: DataTypes.INTEGER
     },
     id_distributeur: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'distributeur',
-        key: 'id_distributeur'
-      }
+      type: DataTypes.INTEGER
     },
     titre: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        max: 255
+      }
     },
     resum: {
-      type: DataTypes.TEXT
+      type: DataTypes.STRING,
+      validate: {
+        max: 255
+      }
     },
     date_debut_affiche: {
-      type: DataTypes.DATEONLY,
-      allowNull: false
+      type: DataTypes.DATEONLY
     },
     date_fin_affiche: {
-      type: DataTypes.DATEONLY,
-      allowNull: false
+      type: DataTypes.DATEONLY
     },
     duree_minutes: {
-      type: DataTypes.DATEONLY,
-      allowNull: false
+      type: DataTypes.INTEGER
     },
     annee_production: {
-      type: DataTypes.DATEONLY,
-      allowNull: false
+      type: DataTypes.INTEGER
     }
   }, {
     timestamps: false

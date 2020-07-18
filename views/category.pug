@@ -1,0 +1,96 @@
+extends cinema
+
+block page-content
+  .category
+    form(name='category')
+      div
+        input#nom(type='text')
+        label(for='nom') Name:
+      div.actions
+        button#save(type='button') Save
+        button#delete(type='button') Delete
+
+
+  script.
+    let id = !{id}
+
+    // Socket.io for live updates of the categories
+    socket.on('categories', data => {
+      let { type, category } = data
+      if (id === category.id_genre){
+        if (type === 'DELETED')
+          window.location.pathname = '/cinema/categories'
+        if (type === 'UPDATED')
+          getCategory()
+      }
+    })
+
+    // Get the category on page load
+    window.addEventListener('load', event => getCategory())
+
+    // AddEventListener to delete category
+    document.getElementById('delete').addEventListener('click', () => deleteCategory())
+    document.getElementById('save').addEventListener('click', () => updateCategory())
+
+    // Function to fill the form with default values
+    const fillForm = infos => {
+      let form = document.forms['category'].elements
+      for (const [key, value] of Object.entries(infos)) {
+        for (let i = 0; i < form.length; i++) {
+          if (form[i].id === key)
+            form[i].value = value
+        }
+      }
+    }
+
+    const updateCategory = () => {
+      let updated = {}
+      let form = document.forms['category'].elements
+
+      for (let i = 0; i < form.length; i++) {
+        if (form[i].type !== 'button' && !(form[i].value === '' || form[i].value === null || form[i].value === undefined))
+          updated[form[i].id] = form[i].value
+      }
+      
+      fetch(`/api/categories/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...loadAuthorizationHeader()
+        },
+        body: JSON.stringify(updated)
+      })
+      .then(res => {
+        res.json().then(json => console.log(json))
+      })
+      .catch(err => console.log(err))  
+    }
+
+    // Fetch to delete category
+    const deleteCategory = () => {
+      fetch(`/api/categories/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          ...loadAuthorizationHeader()
+        }
+      })
+      .then(res => window.location.pathname = '/cinema/categories')
+      .catch(err => console.log(err))
+    }
+    
+    // Fetch to get category
+    const getCategory = () => {
+      fetch(`/api/categories/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...loadAuthorizationHeader()
+        }
+      }).then(res => {
+        res.json().then(json => {
+          fillForm(json.category)
+        })
+      }).catch(err => console.log(err))
+    }
+

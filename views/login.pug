@@ -1,0 +1,40 @@
+extends layouts/layout
+
+block layout-content
+  header
+    h2 Login
+
+  form.sign-in-form
+    input#email(type="email")
+    input#password(type="password")
+    button#submit(type="button") Sign In
+
+  div No account yet ?
+    a(href="/register") Create one.
+
+  script.
+    document.getElementById('submit').addEventListener('click', () => {
+      let email = document.getElementById('email').value
+      let password = document.getElementById('password').value
+      login({ email, password })
+    })
+
+    const login = body => {
+      fetch('/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      })
+      .then(res => {
+        res.json().then(json => {
+          console.log(json)
+          if (json.status === 200) {
+            localStorage.setItem('token', json.token)
+            window.location.pathname = '/'
+          }
+        })
+      })
+      .catch(err => console.log(err))
+    }

@@ -1,15 +1,12 @@
-extends layouts/layout
+extends cinema
 
-block layout-content
-  header
-    h2=title
+block page-content
+  .films
+    header
+      h3=subtitle
 
-  section.films
-    h3 Films list :
+    section.filters
 
-    .filters
-      //- &and;
-      //- button#order &or;
       .limits
         input(type='radio' id='limit_25' name='limit' value=25 checked) 
         label(for='limit_25') 25
@@ -20,22 +17,22 @@ block layout-content
 
       .filter_by
         button.order ASC
-        input(type='radio' id='id_film' name='filter' value='id_film' checked) 
+        input(type='radio' id='id_film' name='filter' value='id_film' checked)
         label(for='id_film') Id
-        input(type='radio' id='titre' name='filter' value='titre') 
+        input(type='radio' id='titre' name='filter' value='titre')
         label(for='titre') Title
-        input(type='radio' id='duree_minutes' name='filter' value='duree_minutes') 
+        input(type='radio' id='duree_minutes' name='filter' value='duree_minutes')
         label(for='duree_minutes') Duration
-        input(type='radio' id='date_debut_affiche' name='filter' value='date_debut_affiche') 
+        input(type='radio' id='date_debut_affiche' name='filter' value='date_debut_affiche')
         label(for='date_debut_affiche') Release Date
-        input(type='radio' id='genre' name='filter' value='genre') 
+        input(type='radio' id='genre' name='filter' value='genre')
         label(for='genre') Category
-        input(type='radio' id='distributeur' name='filter' value='distributeur') 
+        input(type='radio' id='distributeur' name='filter' value='distributeur')
         label(for='distributeur') Distributor
 
       .pages-top
 
-    .table
+    section.table
       .table-head
         span Id
         span Title
@@ -43,68 +40,28 @@ block layout-content
         span Release Date
         span Category
         span Distributor
+        span Actions
     
-    .pages-bottom
+    footer.pages-bottom
 
 
+  script(src='/static/scripts/pagination.js')
   script.
     let count
     let limit = 25
     let offset = 0
     let order = ['id_film', 'ASC']
-    let page = 1
+    let currentPage = 1
 
     window.addEventListener('load', event => getFilms())
 
-    const generateTable = (films) => {
-      let table = document.querySelector('.table')
-      let rows = document.querySelectorAll('.table-row')
-      if (rows) rows.forEach(row => row.remove())
-
-      for (let i = 0; i < films.length; i++) {
-        let row = document.createElement('div')
-        row.className = 'table-row'
-        let values = Object.entries(films[i])
-
-        for (let j = 0; j < values.length; j++) {
-          let col = document.createElement('span')
-          let name = values[j][0]
-          let value = values[j][1]
-          if (name === 'duree_minutes') 
-            col.innerHTML = `${Math.floor(value / 60)}h${value % 60}`
-          else if (name === 'genre' || name === 'distributeur') 
-            col.innerHTML = value && value.nom ? value.nom : 'Undefined'
-          else col.innerHTML = value
-          row.appendChild(col)
-        }
-
-        table.appendChild(row)
-      }
-    }
-
-    const createPagination = (paginate, position) => {
-      let pages = document.querySelectorAll(`.pages-${position}`)
-      let pagesElements = document.querySelectorAll(`.pages-${position} *`)
-      if (pagesElements) pagesElements.forEach(el => el.remove())
-
-      for (let i = 0; i < paginate.length; i++) {
-        let page = paginate[i]
-        let element
-        if (!page.current) {
-          element = document.createElement('button')
-          element.className = 'select-page'
-          element.addEventListener('click', () => {
-            offset = page.offset
-            getFilms()
-          })
-        } else {
-          element = document.createElement('span')
-          element.className = 'current-page'
-        }
-        element.innerHTML = page.page
-        pages.forEach(el => el.appendChild(element))
-      }
-    }
+    // Socket.io for live updates of the films
+    socket.on('films', data => {
+      let { type, film } = data
+      let row = document.getElementById(`film_${film.id_film}`)
+      if (row)
+        getFilms()
+    })
 
     document.querySelector('.order').addEventListener('click', function () {
       order[1] = order[1] === 'ASC' ? 'DESC' : 'ASC'
@@ -123,6 +80,7 @@ block layout-content
       el.addEventListener('click', () => {
         limit = el.value
         offset = 0
+        currentPage = 1
         getFilms()
       })
     })
@@ -131,17 +89,17 @@ block layout-content
       fetch(`/api/films?limit=${limit}&offset=${offset}&order=${JSON.stringify(order)}`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          ...loadAuthorizationHeader()
         }
       }).then(res => {
         res.json().then(json => {
           if (count !== json.filmsCount) {
             count = json.filmsCount
-            document.querySelector('h3').innerHTML = `Films list (${count}):`
+            document.querySelector('h3').innerHTML = `We found ${count} films:`
           }
-          createPagination(json.paginate, 'top')
-          createPagination(json.paginate, 'bottom')
-          generateTable(json.films)
+          paginate(getFilms)
+          generateTable(json.films, 'film','films')
         })
       }).catch(err => console.log(err))
     }

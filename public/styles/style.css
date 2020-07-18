@@ -16,7 +16,7 @@ body {
   background-color: var(--color-black);
 }
 
-nav {
+#app-nav {
   flex: 1;
   height: 100%;
   overflow-y: scroll;
@@ -34,17 +34,12 @@ nav {
   color: white;
 }
 
-.nav-link:first-of-type {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-  margin-bottom: 30px;
-}
-
 .nav-link h1 {
   font-size: 30px;
+  text-align: center;
   color: var(--color-bleen);
+  margin-top: 10px;
+  margin-bottom: 30px;
 }
 
 .nav-link.active {
@@ -154,11 +149,29 @@ h2 {
 /* 
 * CinemArchive
 */
-.films {
+.nav-cinema {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid var(--color-bleen);
+  border-bottom: 1px solid var(--color-bleen);
   width: 100%;
 }
 
-.films h3 {
+.nav-cinema .nav-link {
+  width: auto;
+  font-size: 16px;
+}
+
+.films,
+.distributors,
+.categories {
+  width: 100%;
+}
+
+.films h3,
+.distributors h3,
+.categories h3 {
   font-size: 18px;
   padding: 10px;
 }
@@ -188,10 +201,16 @@ button {
   border: 1px solid white;
   color: white;
   background: none;
-  margin-right: 8px;
   padding: 8px;
   cursor: pointer;
   outline: none;
+}
+
+input[type="radio"]+label,
+.select-page,
+.current-page,
+button:not(:last-child) {
+  margin-right: 8px;
 }
 
 .pages-bottom {
@@ -260,6 +279,18 @@ input[type="radio"]:checked+label,
   border-right: 1px solid white;
 }
 
+.table-row a {
+  color: white;
+  border: 1px solid white;
+  text-decoration: none;
+  padding: 5px;
+}
+
+.table-row a:hover {
+  color: var(--color-bleen);
+  border-color: var(--color-bleen);
+}
+
 .table-head {
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
@@ -269,4 +300,86 @@ input[type="radio"]:checked+label,
 .table-row:last-of-type {
   border-bottom-right-radius: 10px;
   border-bottom-left-radius: 10px;
+}
+
+/* 
+* CinemArchive - FilmID/DistributorID/CategoryID
+*/
+
+.film,
+.distributor,
+.category {
+  box-sizing: border-box;
+  display: flex;
+  padding: 50px;
+  width: 100%;
+}
+
+.film form,
+.distributor form,
+.category form {
+  display: flex;
+  flex-direction: column;
+  width: 500px;
+}
+
+.film form>div:not(:last-of-type),
+.distributor form>div:not(:last-of-type),
+.category form>div:not(:last-of-type) {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.film form input,
+.film form textarea,
+.film form select,
+.distributor form input,
+.distributor form textarea,
+.distributor form select,
+.category form input,
+.category form textarea,
+.category form select {
+  flex: 3;
+  background: none;
+  border: none;
+  color: white;
+  border-bottom: 1px solid white;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.film form textarea {
+  resize: none;
+  box-sizing: border-box;
+  min-height: 75px;
+  height: auto;
+  overflow: auto;
+  border-left: 1px solid white;
+}
+
+.film form input:focus,
+.film form textarea:focus,
+.film form select:focus,
+.distributor form input:focus,
+.distributor form textarea:focus,
+.distributor form select:focus,
+.category form input:focus,
+.category form textarea:focus,
+.category form select:focus {
+  outline: none;
+  border-color: var(--color-bleen);
+}
+
+.film form label,
+.distributor form label,
+.category form label {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.film .actions,
+.distributor .actions,
+.category .actions {
+  display: flex;
+  justify-content: flex-end;
 }

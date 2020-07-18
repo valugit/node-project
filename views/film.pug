@@ -1,0 +1,154 @@
+extends cinema
+
+block page-content
+  .film
+    form(name='film')
+      div
+        input#titre(type='text')
+        label(for="titre") Title:
+      div
+        textarea#resum
+        label(for='resum') Synopsis:
+      div
+        input#date_debut_affiche(type='date')
+        label(for='date_debut_affiche') Release Date:
+      div
+        input#date_fin_affiche(type='date')
+        label(for='date_debut_affiche') Last Showing:
+      div
+        input#duree_minutes(type='number' min=0)
+        label(for='duree_minutes') Duration:
+      div
+        input#annee_production(type='text' pattern='\d{4}')
+        label(for='annee_production') Production Year:
+      div
+        select#id_genre
+        label(for='id_genre') Category:
+      div
+        select#id_distributeur
+        label(for='id_distributeur') Distributor:
+      div.actions
+        button#watch(type='button') Watch
+        button#save(type='button') Save
+        button#delete(type='button') Delete
+
+
+  script.
+    let id = !{id}
+
+    // Socket.io for live updates of the films
+    socket.on('films', data => {
+      let { type, film } = data
+      if (id === film.id_film) {
+        if (type === 'DELETED')
+          window.location.pathname = '/cinema/films'
+        if (type === 'UPDATED')
+          getFilm()
+      }
+    })
+
+    // Get the film on page load
+    window.addEventListener('load', event => getFilm())
+
+    // AddEventListener to delete film
+    document.getElementById('watch').addEventListener('click', () => addSession())
+    document.getElementById('delete').addEventListener('click', () => deleteFilm())
+    document.getElementById('save').addEventListener('click', () => updateFilm())
+
+    // Function to fill the form with default values
+    const fillForm = infos => {
+      let form = document.forms['film'].elements
+      for (const [key, value] of Object.entries(infos)) {
+        for (let i = 0; i < form.length; i++) {
+          if (form[i].id === key)
+            form[i].value = value
+        }
+      }
+    }
+
+    // Function to add options to a given select
+    const addSelectOptions = (selectId, options) => {
+      let select = document.getElementById(selectId)
+      let currentOptions = document.querySelectorAll(`#${selectId} option`)
+      if (currentOptions) currentOptions.forEach(option => option.remove())
+      
+      let optionNull = document.createElement('option')
+      optionNull.value = ''
+      optionNull.innerHTML = ''
+      select.appendChild(optionNull)
+
+      for (let i = 0; i < options.length; i++) {
+        let option = document.createElement('option')
+        option.value = selectId === 'id_genre' ? options[i].id_genre : options[i].id_distributeur
+        option.innerHTML = options[i].nom
+        select.appendChild(option)
+      }
+    }
+
+    const updateFilm = () => {
+      let updated = {}
+      let form = document.forms['film'].elements
+
+      for (let i = 0; i < form.length; i++) {
+        if (form[i].type !== 'button' && !(form[i].value === '' || form[i].value === null || form[i].value === undefined))
+          updated[form[i].id] = form[i].value
+      }
+      
+      fetch(`/api/films/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...loadAuthorizationHeader()
+        },
+        body: JSON.stringify(updated)
+      })
+      .then(res => {
+        res.json().then(json => console.log(json))
+      })
+      .catch(err => console.log(err))  
+    }
+
+    // Fetch to delete film
+    const deleteFilm = () => {
+      fetch(`/api/films/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          ...loadAuthorizationHeader()
+        }
+      })
+      .then(res => window.location.pathname = '/cinema/films')
+      .catch(err => console.log(err))
+    }
+
+
+    const addSession = () => {
+      fetch(`/api/sessions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...loadAuthorizationHeader()
+        },
+        body: JSON.stringify({ id_film: id })
+      }).then(res => {
+        res.json().then(json => window.location.pathname = '/cinema')
+      }).catch(err => console.log(err))
+    }
+    
+    // Fetch to get film
+    const getFilm = () => {
+      fetch(`/api/films/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...loadAuthorizationHeader()
+        }
+      }).then(res => {
+        res.json().then(json => {
+          addSelectOptions('id_genre', json.categories)
+          addSelectOptions('id_distributeur', json.distributors)
+          fillForm(json.film)
+        })
+      }).catch(err => console.log(err))
+    }
+

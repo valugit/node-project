@@ -1,0 +1,94 @@
+extends cinema
+
+block page-content
+  .categories
+    header
+      h3=subtitle
+
+    section.filters
+
+      .limits
+        input(type='radio' id='limit_25' name='limit' value=20 checked) 
+        label(for='limit_25') 20
+        input(type='radio' id='limit_50' name='limit' value=40) 
+        label(for='limit_50') 40
+
+      .filter_by
+        button.order ASC
+        input(type='radio' id='id_genre' name='filter' value='id_genre' checked)
+        label(for='id_genre') Id
+        input(type='radio' id='nom' name='filter' value='nom')
+        label(for='nom') Name
+
+      .pages-top
+
+    section.table
+      .table-head
+        span Id
+        span Name
+        span Actions
+    
+    footer.pages-bottom
+
+
+  script(src='/static/scripts/pagination.js')
+  script.
+    let count
+    let limit = 20
+    let offset = 0
+    let order = ['id_genre', 'ASC']
+    let currentPage = 1
+
+    window.addEventListener('load', event => getCategories())
+    
+    // Socket.io for live updates of the categories
+    socket.on('categories', data => {
+      let { type, category } = data
+      let row = document.getElementById(`category_${category.id_genre}`)
+      if (row)
+        getCategories()
+    })
+
+    document.querySelector('.order').addEventListener('click', function () {
+      order[1] = order[1] === 'ASC' ? 'DESC' : 'ASC'
+      this.innerHTML = order[1]
+      getCategories()
+    })
+
+    document.querySelectorAll('input[name="filter"]').forEach(el => {
+      el.addEventListener('click', () => {
+        order[0] = el.value
+        getCategories()
+      })
+    })
+
+    document.querySelectorAll('input[name="limit"]').forEach(el => {
+      el.addEventListener('click', () => {
+        limit = el.value
+        offset = 0
+        currentPage = 1
+        getCategories()
+      })
+    })
+
+    const getCategories = () => {
+      fetch(`/api/categories?limit=${limit}&offset=${offset}&order=${JSON.stringify(order)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...loadAuthorizationHeader()
+        }
+      }).then(res => {
+        res.json().then(json => {
+          if (count !== json.categoriesCount) {
+            count = json.categoriesCount
+            document.querySelector('h3').innerHTML = `We found ${count} categories:`
+          }
+          paginate(getCategories)
+          generateTable(json.categories, 'category', 'categories')
+        })
+      }).catch(err => console.log(err))
+    }
+
+
+
