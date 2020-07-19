@@ -28,22 +28,41 @@ block layout-content
           getCurrentSession()
       })
 
+      // Function print all information of the session
       const createSession = session => {
         const cinemaHome = document.querySelector('.cinema-home')
+        cinemaHome.innerHTML = ''
         const h3 = document.createElement('h3')
         h3.innerHTML = 'Current film:'
         cinemaHome.appendChild(h3)
 
+        const labels = [
+          { name: 'titre', userFriendly: 'Title' },
+          { name: 'resum', userFriendly: 'Synopsis' },
+          { name: 'duree_minutes', userFriendly: 'Duration' },
+          { name: 'genre', userFriendly: 'Category' },
+          { name: 'distributeur', userFriendly: 'Distributor' }
+        ]
         const film = session.film
         const filmInfos = document.createElement('div')
         filmInfos.className = 'cinema-film-infos'
         for (const [key, value] of Object.entries(film)) {
-          const span = document.createElement('span')
+          const div = document.createElement('div')
+
+          const label = document.createElement('span')
+          label.innerHTML = `${labels.find(label => key === label.name).userFriendly}:`
+
+          const info = document.createElement('span')
           if (key === 'genre' || key === 'distributeur')
-            span.innerHTML = `${key}: ${value && value.nom ? value.nom : 'undefined'}`
+            info.innerHTML = value && value.nom ? value.nom : 'undefined'
+          else if (key === 'duree_minutes')
+            info.innerHTML = `${Math.floor(value / 60)}h${value % 60}`
           else 
-            span.innerHTML = `${key}: ${value || 'undefined'}`
-          filmInfos.appendChild(span)
+            info.innerHTML = value || 'undefined'
+
+          div.appendChild(label)
+          div.appendChild(info)
+          filmInfos.appendChild(div)
         }
         cinemaHome.appendChild(filmInfos)
 
@@ -53,7 +72,8 @@ block layout-content
         userInfos.innerHTML = `Choosen by: ${user.firstName} ${user.lastName}`
         cinemaHome.appendChild(userInfos)
       }
-
+      
+      // Get current session
       const getCurrentSession = () => {
         fetch('/api/sessions', {
           method: 'GET',
@@ -63,12 +83,8 @@ block layout-content
           }
         }).then(res => {
           if (res.status === 204) 
-              document.querySelector('.cinema-home').innerHTML = 'No film currently playing.'
-          if (res.status === 200) {
-            res.json().then(json => {
-              console.log(json.session)
-              createSession(json.session)
-            })
-          }
+            document.querySelector('.cinema-home').innerHTML = 'No film currently playing.'
+          if (res.status === 200)
+            res.json().then(json => createSession(json.session))
         }).catch(err => console.log(err))
       }

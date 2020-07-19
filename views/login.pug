@@ -8,9 +8,11 @@ block layout-content
     input#email(type="email")
     input#password(type="password")
     button#submit(type="button") Sign In
+    div#message
 
-  div No account yet ?
-    a(href="/register") Create one.
+  .navigate No account yet ?&nbsp;
+    a(href="/register") Create one
+    | .
 
   script.
     document.getElementById('submit').addEventListener('click', () => {
@@ -29,12 +31,14 @@ block layout-content
       })
       .then(res => {
         res.json().then(json => {
-          console.log(json)
           if (json.status === 200) {
             localStorage.setItem('token', json.token)
             window.location.pathname = '/'
           }
         })
       })
-      .catch(err => console.log(err))
+      .catch(err => {
+        console.log(err)
+        setMessage('error')
+      })
     }

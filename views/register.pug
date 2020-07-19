@@ -12,8 +12,9 @@ block layout-content
     button#submit(type="button") Sign Up
     div#message
 
-  div Already have an account ?
-    a(href="/login") Sign in.
+  .navigate Already have an account ?&nbsp;
+    a(href="/login") Sign in
+    | .
 
   script.
     document.getElementById('submit').addEventListener('click', () => {
@@ -45,7 +46,6 @@ block layout-content
       })
       .then(res => {
         res.json().then(json => {
-          console.log(json)
           if (json.status === 422)
             setMessage('error')
           if (json.status === 201) {

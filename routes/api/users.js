@@ -18,8 +18,8 @@ router.post('/api/users/login', validatorUserLogin, (req, res) => {
       req.session.user_id = user.id
       res.status(200).json({ status: 200, token: jwt.sign({ id: user.id }, JWT_SECRET, { algorithm: 'HS512' }) })
     }
-    else
-      res.status(400).json({ status: 400, message: 'Wrong credentials.' })
+  }).catch(err => {
+    res.status(400).json({ status: 400, message: 'Wrong credentials.', err })
   })
 })
 
@@ -34,8 +34,8 @@ router.post('/api/users', validatorUserCreate, (req, res) => {
       req.session.user_id = user.id
       res.status(201).json({ status: 201, message: 'Account successfully created.' })
     }
-    else
-      res.status(400).json({ status: 400, message: 'Something went wrong with the request.' })
+  }).catch(err => {
+    res.status(400).json({ status: 400, message: 'Something went wrong with the request.', err })
   })
 })
 

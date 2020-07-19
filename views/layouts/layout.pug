@@ -10,14 +10,16 @@ html(lang="en")
     script(src="/static/scripts/authentication.js")
     title= title || 'NodeProject'
     script.
-      let socket = io('http://localhost:3000')
+      const socket = io('http://localhost:3000')
       authenticate()
+
+      window.addEventListener('load', event => createNavLinks('!{title}'))
+
+
   body
     nav#app-nav
       a.nav-link(href="/")
         h1 NodeProject
-      a.nav-link(href="/paint" class=`${title === 'SquarePaint' ? 'active' : null}`) SquarePaint
-      a.nav-link(href="/cinema" class=`${title === 'CinemArchive' ? 'active' : null}`) CinemArchive
 
     main
       block layout-content

@@ -25,7 +25,8 @@ body {
   border-right: 1px solid var(--color-bleen);
 }
 
-.nav-link {
+.nav-link,
+button.logout {
   box-sizing: border-box;
   padding: 10px;
   font-size: 20px;
@@ -34,12 +35,31 @@ body {
   color: white;
 }
 
+#app-nav button.logout {
+  border: none;
+  background: none;
+  display: flex;
+  justify-content: flex-start;
+  margin: 0;
+}
+
+.nav-link:hover,
+button.logout:hover {
+  color: var(--color-bleen);
+  text-decoration: underline;
+}
+
 .nav-link h1 {
   font-size: 30px;
   text-align: center;
   color: var(--color-bleen);
   margin-top: 10px;
   margin-bottom: 30px;
+}
+
+.nav-link:hover h1 {
+  color: white;
+  text-decoration: underline;
 }
 
 .nav-link.active {
@@ -55,6 +75,56 @@ main {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+}
+
+/* 
+* Login Register
+*/
+
+.sign-in-form,
+.sign-up-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 300px;
+}
+
+.sign-in-form #submit,
+.sign-up-form #submit {
+  margin: 10px 0px;
+}
+
+.sign-in-form #submit:hover,
+.sign-up-form #submit:hover {
+  color: var(--color-bleen);
+  border-color: var(--color-bleen);
+  text-decoration: underline;
+}
+
+.sign-in-form input,
+.sign-up-form input {
+  background: none;
+  border: none;
+  margin-bottom: 5px;
+  padding: 10px;
+  border-bottom: 1px solid white;
+  color: white;
+}
+
+.sign-in-form input:focus,
+.sign-up-form input:focus {
+  border-color: var(--color-bleen);
+  outline: none;
+}
+
+.navigate a {
+  color: var(--color-bleen);
+  outline: none;
+  cursor: pointer;
+}
+
+.navigate a:hover {
+  color: white;
 }
 
 /* 
@@ -300,6 +370,37 @@ input[type="radio"]:checked+label,
 .table-row:last-of-type {
   border-bottom-right-radius: 10px;
   border-bottom-left-radius: 10px;
+}
+
+/* 
+* CinemArchive - Home
+*/
+
+.cinema-home {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 50px;
+}
+
+.cinema-film-infos {
+  display: flex;
+  flex-direction: column;
+}
+
+.cinema-film-infos>div {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+.cinema-film-infos>div>span:first-of-type {
+  flex: 1;
+  color: var(--color-bleen);
+}
+
+.cinema-film-infos>div>span:last-of-type {
+  flex: 4;
 }
 
 /* 
