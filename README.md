@@ -1,4 +1,4 @@
-# SquarePaint
+# Node Project
 
 Install dependencies:
 ```sh
